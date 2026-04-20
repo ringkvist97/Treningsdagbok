@@ -96,13 +96,12 @@
       box-shadow: 0 0 10px var(--accent);
     }
 
-    form {
+    .session-meta {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       gap: 12px;
+      margin-bottom: 16px;
     }
-
-    form .full { grid-column: 1 / -1; }
 
     label {
       display: block;
@@ -157,6 +156,18 @@
       transform: translateY(-1px);
     }
 
+    .btn-secondary {
+      background: var(--bg-elev-2);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0, 255, 136, 0.08);
+    }
+
     .btn-ghost {
       background: transparent;
       color: var(--text-dim);
@@ -180,6 +191,79 @@
 
     .btn-danger:hover {
       background: rgba(255, 77, 109, 0.1);
+    }
+
+    .exercises-section {
+      border-top: 1px dashed var(--border);
+      padding-top: 16px;
+      margin-top: 4px;
+    }
+
+    .exercises-section-title {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .exercise-row {
+      background: var(--bg-elev-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .exercise-row-main {
+      display: grid;
+      gap: 2px;
+    }
+
+    .exercise-row-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .exercise-row-meta {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    .exercise-form-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 8px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .exercise-form-grid label {
+      margin-bottom: 4px;
+    }
+
+    .exercise-form-grid .btn-secondary {
+      height: 42px;
+    }
+
+    .empty-exercises {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      padding: 16px;
+      font-style: italic;
+    }
+
+    .submit-row {
+      margin-top: 16px;
+    }
+
+    .submit-row button {
+      width: 100%;
     }
 
     .history-controls {
@@ -231,34 +315,63 @@
       font-size: 0.8rem;
     }
 
-    .entry {
+    .session-card {
       background: var(--bg-elev-2);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-bottom: 8px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .session-card-header {
+      display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    .entry-main {
-      display: grid;
-      gap: 4px;
-    }
-
-    .entry-title {
-      font-weight: 600;
-      font-size: 1rem;
-    }
-
-    .entry-meta {
+    .session-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       color: var(--text-dim);
       font-size: 0.85rem;
     }
 
-    .entry-meta .chip {
+    .session-card-title .time {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .session-exercises {
+      display: grid;
+      gap: 6px;
+    }
+
+    .session-exercise {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .session-exercise-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .session-exercise-meta {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+
+    .chip {
       display: inline-block;
       background: rgba(0, 255, 136, 0.08);
       color: var(--accent);
@@ -269,11 +382,13 @@
       font-weight: 600;
     }
 
-    .entry-notes {
+    .session-notes {
       color: var(--text-dim);
       font-size: 0.85rem;
       font-style: italic;
-      margin-top: 2px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
     }
 
     .empty {
@@ -283,9 +398,17 @@
       font-size: 0.95rem;
     }
 
-    @media (max-width: 520px) {
-      form { grid-template-columns: 1fr 1fr; }
-      form .full { grid-column: 1 / -1; }
+    @media (max-width: 640px) {
+      .exercise-form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .exercise-form-grid .field-exercise {
+        grid-column: 1 / -1;
+      }
+      .exercise-form-grid .btn-secondary {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
     }
 
     footer {
@@ -305,35 +428,46 @@
   <main>
     <section class="card">
       <h2>Ny økt</h2>
-      <form id="workout-form">
-        <div class="full">
-          <label for="exercise">Øvelse</label>
-          <input type="text" id="exercise" placeholder="f.eks. Markløft" required />
-        </div>
-        <div>
-          <label for="sets">Sett</label>
-          <input type="number" id="sets" min="1" step="1" placeholder="3" required />
-        </div>
-        <div>
-          <label for="reps">Reps</label>
-          <input type="number" id="reps" min="1" step="1" placeholder="8" required />
-        </div>
-        <div>
-          <label for="weight">Vekt (kg)</label>
-          <input type="number" id="weight" min="0" step="0.5" placeholder="80" />
-        </div>
+
+      <div class="session-meta">
         <div>
           <label for="datetime">Dato og tidspunkt</label>
           <input type="datetime-local" id="datetime" required />
         </div>
-        <div class="full">
-          <label for="notes">Notat (valgfritt)</label>
-          <textarea id="notes" placeholder="Hvordan føltes økten?"></textarea>
+        <div>
+          <label for="session-notes">Notat for hele økten (valgfritt)</label>
+          <textarea id="session-notes" placeholder="Hvordan føltes økten? Energi, søvn, form..."></textarea>
         </div>
-        <div class="full">
-          <button type="submit" class="btn-primary">Lagre økt</button>
+      </div>
+
+      <div class="exercises-section">
+        <div class="exercises-section-title">Øvelser i denne økten</div>
+        <div id="draft-exercises"></div>
+
+        <div class="exercise-form-grid">
+          <div class="field-exercise">
+            <label for="exercise">Øvelse</label>
+            <input type="text" id="exercise" placeholder="f.eks. Markløft" />
+          </div>
+          <div>
+            <label for="sets">Sett</label>
+            <input type="number" id="sets" min="1" step="1" placeholder="3" />
+          </div>
+          <div>
+            <label for="reps">Reps</label>
+            <input type="number" id="reps" min="1" step="1" placeholder="8" />
+          </div>
+          <div>
+            <label for="weight">Vekt (kg)</label>
+            <input type="number" id="weight" min="0" step="0.5" placeholder="80" />
+          </div>
+          <button type="button" id="add-exercise-btn" class="btn-secondary">+ Legg til</button>
         </div>
-      </form>
+
+        <div class="submit-row">
+          <button type="button" id="save-session-btn" class="btn-primary">Lagre økt</button>
+        </div>
+      </div>
     </section>
 
     <section class="card">
@@ -350,15 +484,30 @@
   <footer>Data lagres lokalt i nettleseren din.</footer>
 
   <script>
-    const STORAGE_KEY = 'treningsdagbok.entries.v1';
-    const form = document.getElementById('workout-form');
+    const STORAGE_KEY = 'treningsdagbok.sessions.v2';
+    const OLD_STORAGE_KEY = 'treningsdagbok.entries.v1';
+
+    const dtInput = document.getElementById('datetime');
+    const sessionNotesEl = document.getElementById('session-notes');
+    const exerciseEl = document.getElementById('exercise');
+    const setsEl = document.getElementById('sets');
+    const repsEl = document.getElementById('reps');
+    const weightEl = document.getElementById('weight');
+    const addExerciseBtn = document.getElementById('add-exercise-btn');
+    const saveSessionBtn = document.getElementById('save-session-btn');
+    const draftEl = document.getElementById('draft-exercises');
     const historyEl = document.getElementById('history');
     const statsEl = document.getElementById('stats');
     const searchEl = document.getElementById('search');
     const exportBtn = document.getElementById('export-btn');
-    const dtInput = document.getElementById('datetime');
 
-    // Forhåndsfyll datetime med «nå»
+    // Øvelser som ligger i den pågående (ulagrede) økten
+    let draftExercises = [];
+
+    function uid() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
     function setNow() {
       const d = new Date();
       d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -369,19 +518,39 @@
     function load() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : [];
+        if (raw) return JSON.parse(raw);
+
+        // Migrering: gamle data der hver øvelse var sin egen "økt"
+        const oldRaw = localStorage.getItem(OLD_STORAGE_KEY);
+        if (oldRaw) {
+          const oldEntries = JSON.parse(oldRaw);
+          const migrated = oldEntries.map(e => ({
+            id: e.id || uid(),
+            datetime: e.datetime,
+            notes: e.notes || '',
+            exercises: [{
+              id: uid(),
+              exercise: e.exercise,
+              sets: e.sets,
+              reps: e.reps,
+              weight: e.weight ?? null
+            }]
+          }));
+          save(migrated);
+          return migrated;
+        }
+        return [];
       } catch (e) {
         console.error('Kunne ikke lese lagrede data', e);
         return [];
       }
     }
 
-    function save(entries) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    function save(sessions) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
     }
 
     function formatDateKey(iso) {
-      // Grupper etter dato i lokal tid
       const d = new Date(iso);
       return d.toLocaleDateString('no-NO', {
         weekday: 'long',
@@ -396,16 +565,130 @@
       return d.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' });
     }
 
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    function renderDraft() {
+      if (draftExercises.length === 0) {
+        draftEl.innerHTML = `<div class="empty-exercises">Ingen øvelser lagt til ennå. Fyll inn feltene under og trykk "Legg til".</div>`;
+        return;
+      }
+      draftEl.innerHTML = draftExercises.map(ex => {
+        const weightText = ex.weight ? `${ex.weight} kg` : 'kroppsvekt';
+        return `
+          <div class="exercise-row">
+            <div class="exercise-row-main">
+              <div class="exercise-row-title">${escapeHtml(ex.exercise)}</div>
+              <div class="exercise-row-meta">
+                <span class="chip">${ex.sets} × ${ex.reps}</span>
+                <span class="chip">${escapeHtml(weightText)}</span>
+              </div>
+            </div>
+            <button type="button" class="btn-danger" data-draft-id="${ex.id}">Fjern</button>
+          </div>`;
+      }).join('');
+
+      draftEl.querySelectorAll('button[data-draft-id]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          draftExercises = draftExercises.filter(ex => ex.id !== btn.dataset.draftId);
+          renderDraft();
+        });
+      });
+    }
+
+    function addExerciseToDraft() {
+      const exercise = exerciseEl.value.trim();
+      const sets = parseInt(setsEl.value, 10);
+      const reps = parseInt(repsEl.value, 10);
+      const weightRaw = weightEl.value;
+
+      if (!exercise) {
+        exerciseEl.focus();
+        return;
+      }
+      if (!sets || sets < 1) {
+        setsEl.focus();
+        return;
+      }
+      if (!reps || reps < 1) {
+        repsEl.focus();
+        return;
+      }
+
+      draftExercises.push({
+        id: uid(),
+        exercise,
+        sets,
+        reps,
+        weight: weightRaw ? parseFloat(weightRaw) : null
+      });
+
+      // Nullstill øvelsesfeltene, men la datetime og notat være
+      exerciseEl.value = '';
+      setsEl.value = '';
+      repsEl.value = '';
+      weightEl.value = '';
+      exerciseEl.focus();
+
+      renderDraft();
+    }
+
+    function saveSession() {
+      if (draftExercises.length === 0) {
+        alert('Legg til minst én øvelse før du lagrer økten.');
+        return;
+      }
+      if (!dtInput.value) {
+        alert('Velg dato og tidspunkt.');
+        return;
+      }
+
+      const session = {
+        id: uid(),
+        datetime: new Date(dtInput.value).toISOString(),
+        notes: sessionNotesEl.value.trim(),
+        exercises: draftExercises.map(ex => ({ ...ex }))
+      };
+
+      const sessions = load();
+      sessions.push(session);
+      save(sessions);
+
+      // Nullstill skjemaet
+      draftExercises = [];
+      sessionNotesEl.value = '';
+      exerciseEl.value = '';
+      setsEl.value = '';
+      repsEl.value = '';
+      weightEl.value = '';
+      setNow();
+
+      renderDraft();
+      render();
+    }
+
+    function deleteSession(id) {
+      if (!confirm('Slette hele denne økten?')) return;
+      const sessions = load().filter(s => s.id !== id);
+      save(sessions);
+      render();
+    }
+
+    function sessionMatchesQuery(session, query) {
+      if (!query) return true;
+      if ((session.notes || '').toLowerCase().includes(query)) return true;
+      return session.exercises.some(ex =>
+        (ex.exercise || '').toLowerCase().includes(query)
+      );
+    }
+
     function render() {
       const all = load();
       const query = searchEl.value.trim().toLowerCase();
-
-      const filtered = query
-        ? all.filter(e =>
-            (e.exercise || '').toLowerCase().includes(query) ||
-            (e.notes || '').toLowerCase().includes(query)
-          )
-        : all;
+      const filtered = all.filter(s => sessionMatchesQuery(s, query));
 
       statsEl.innerHTML = `<strong>${all.length}</strong> økt${all.length === 1 ? '' : 'er'} lagret`;
 
@@ -418,86 +701,80 @@
         return;
       }
 
-      // Sorter nyeste først
       const sorted = [...filtered].sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
 
       // Grupper etter dato
       const groups = new Map();
-      for (const e of sorted) {
-        const key = formatDateKey(e.datetime);
+      for (const s of sorted) {
+        const key = formatDateKey(s.datetime);
         if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(e);
+        groups.get(key).push(s);
       }
 
       let html = '';
-      for (const [day, items] of groups) {
+      for (const [day, sessions] of groups) {
+        const totalExercises = sessions.reduce((sum, s) => sum + s.exercises.length, 0);
         html += `<div class="day-group">
           <div class="day-header">
             <h3>${escapeHtml(day)}</h3>
-            <span>${items.length} øvelse${items.length === 1 ? '' : 'r'}</span>
+            <span>${sessions.length} økt${sessions.length === 1 ? '' : 'er'} · ${totalExercises} øvelse${totalExercises === 1 ? '' : 'r'}</span>
           </div>`;
-        for (const e of items) {
-          const weightText = e.weight ? `${e.weight} kg` : 'kroppsvekt';
+
+        for (const s of sessions) {
           html += `
-            <div class="entry">
-              <div class="entry-main">
-                <div class="entry-title">${escapeHtml(e.exercise)}</div>
-                <div class="entry-meta">
-                  <span class="chip">${e.sets} × ${e.reps}</span>
-                  <span class="chip">${escapeHtml(weightText)}</span>
-                  <span>${formatTime(e.datetime)}</span>
+            <div class="session-card">
+              <div class="session-card-header">
+                <div class="session-card-title">
+                  <span class="time">${formatTime(s.datetime)}</span>
+                  <span>· ${s.exercises.length} øvelse${s.exercises.length === 1 ? '' : 'r'}</span>
                 </div>
-                ${e.notes ? `<div class="entry-notes">${escapeHtml(e.notes)}</div>` : ''}
+                <button type="button" class="btn-danger" data-session-id="${s.id}">Slett økt</button>
               </div>
-              <button type="button" class="btn-danger" data-id="${e.id}">Slett</button>
-            </div>`;
+              <div class="session-exercises">`;
+
+          for (const ex of s.exercises) {
+            const weightText = ex.weight ? `${ex.weight} kg` : 'kroppsvekt';
+            html += `
+                <div class="session-exercise">
+                  <div>
+                    <div class="session-exercise-name">${escapeHtml(ex.exercise)}</div>
+                    <div class="session-exercise-meta">
+                      <span class="chip">${ex.sets} × ${ex.reps}</span>
+                      <span class="chip">${escapeHtml(weightText)}</span>
+                    </div>
+                  </div>
+                </div>`;
+          }
+
+          html += `</div>`;
+
+          if (s.notes) {
+            html += `<div class="session-notes">${escapeHtml(s.notes)}</div>`;
+          }
+
+          html += `</div>`;
         }
         html += `</div>`;
       }
       historyEl.innerHTML = html;
 
-      // Koble opp slett-knapper
-      historyEl.querySelectorAll('button[data-id]').forEach(btn => {
-        btn.addEventListener('click', () => deleteEntry(btn.dataset.id));
+      historyEl.querySelectorAll('button[data-session-id]').forEach(btn => {
+        btn.addEventListener('click', () => deleteSession(btn.dataset.sessionId));
       });
     }
 
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[c]));
-    }
+    // Event-handlere
+    addExerciseBtn.addEventListener('click', addExerciseToDraft);
+    saveSessionBtn.addEventListener('click', saveSession);
 
-    function deleteEntry(id) {
-      if (!confirm('Slette denne øvelsen?')) return;
-      const entries = load().filter(e => e.id !== id);
-      save(entries);
-      render();
-    }
-
-    form.addEventListener('submit', (ev) => {
-      ev.preventDefault();
-      const entry = {
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
-        exercise: document.getElementById('exercise').value.trim(),
-        sets: parseInt(document.getElementById('sets').value, 10),
-        reps: parseInt(document.getElementById('reps').value, 10),
-        weight: document.getElementById('weight').value
-          ? parseFloat(document.getElementById('weight').value)
-          : null,
-        datetime: new Date(dtInput.value).toISOString(),
-        notes: document.getElementById('notes').value.trim()
-      };
-      const entries = load();
-      entries.push(entry);
-      save(entries);
-
-      // Nullstill skjemaet, men behold dato/tid så det er enkelt å legge til neste øvelse i samme økt
-      const keepDate = dtInput.value;
-      form.reset();
-      dtInput.value = keepDate;
-
-      render();
+    // Enter i øvelsesfeltene legger til øvelsen
+    [exerciseEl, setsEl, repsEl, weightEl].forEach(el => {
+      el.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          addExerciseToDraft();
+        }
+      });
     });
 
     searchEl.addEventListener('input', render);
@@ -519,6 +796,7 @@
       URL.revokeObjectURL(url);
     });
 
+    renderDraft();
     render();
   </script>
 </body>
