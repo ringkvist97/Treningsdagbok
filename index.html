@@ -250,6 +250,51 @@
       height: 42px;
     }
 
+    .type-toggle {
+      display: inline-flex;
+      background: var(--bg-elev-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 12px;
+      gap: 2px;
+    }
+
+    .type-toggle button {
+      background: transparent;
+      color: var(--text-dim);
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .type-toggle button.active {
+      background: var(--accent);
+      color: #001912;
+      box-shadow: 0 2px 8px rgba(0, 255, 136, 0.2);
+    }
+
+    .type-toggle button:not(.active):hover {
+      color: var(--text);
+    }
+
+    [data-field-group].hidden {
+      display: none !important;
+    }
+
+    .chip.chip-cardio {
+      background: rgba(0, 204, 255, 0.08);
+      color: #66d9ff;
+    }
+
+    .chip.chip-type {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-dim);
+    }
+
     .empty-exercises {
       text-align: center;
       color: var(--text-dim);
@@ -444,23 +489,43 @@
         <div class="exercises-section-title">Øvelser i denne økten</div>
         <div id="draft-exercises"></div>
 
+        <div class="type-toggle" role="tablist" aria-label="Type øvelse">
+          <button type="button" class="type-btn active" data-type="styrke">Styrke</button>
+          <button type="button" class="type-btn" data-type="cardio">Cardio</button>
+        </div>
+
         <div class="exercise-form-grid">
           <div class="field-exercise">
             <label for="exercise">Øvelse</label>
             <input type="text" id="exercise" placeholder="f.eks. Markløft" />
           </div>
-          <div>
+
+          <div data-field-group="styrke">
             <label for="sets">Sett</label>
             <input type="number" id="sets" min="1" step="1" placeholder="3" />
           </div>
-          <div>
+          <div data-field-group="styrke">
             <label for="reps">Reps</label>
             <input type="number" id="reps" min="1" step="1" placeholder="8" />
           </div>
-          <div>
+          <div data-field-group="styrke">
             <label for="weight">Vekt (kg)</label>
             <input type="number" id="weight" min="0" step="0.5" placeholder="80" />
           </div>
+
+          <div data-field-group="cardio" class="hidden">
+            <label for="minutes">Minutter</label>
+            <input type="number" id="minutes" min="0" step="1" placeholder="30" />
+          </div>
+          <div data-field-group="cardio" class="hidden">
+            <label for="distance">Distanse (km)</label>
+            <input type="number" id="distance" min="0" step="0.1" placeholder="5" />
+          </div>
+          <div data-field-group="cardio" class="hidden">
+            <label for="resistance">Motstand</label>
+            <input type="text" id="resistance" placeholder="f.eks. nivå 5" />
+          </div>
+
           <button type="button" id="add-exercise-btn" class="btn-secondary">+ Legg til</button>
         </div>
 
@@ -493,6 +558,9 @@
     const setsEl = document.getElementById('sets');
     const repsEl = document.getElementById('reps');
     const weightEl = document.getElementById('weight');
+    const minutesEl = document.getElementById('minutes');
+    const distanceEl = document.getElementById('distance');
+    const resistanceEl = document.getElementById('resistance');
     const addExerciseBtn = document.getElementById('add-exercise-btn');
     const saveSessionBtn = document.getElementById('save-session-btn');
     const draftEl = document.getElementById('draft-exercises');
@@ -500,9 +568,12 @@
     const statsEl = document.getElementById('stats');
     const searchEl = document.getElementById('search');
     const exportBtn = document.getElementById('export-btn');
+    const typeBtns = document.querySelectorAll('.type-btn');
+    const fieldGroups = document.querySelectorAll('[data-field-group]');
 
     // Øvelser som ligger i den pågående (ulagrede) økten
     let draftExercises = [];
+    let currentType = 'styrke';
 
     function uid() {
       return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -518,7 +589,18 @@
     function load() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
+        if (raw) {
+          const sessions = JSON.parse(raw);
+          // Sørg for at alle øvelser har en type (bakoverkompatibilitet)
+          let dirty = false;
+          for (const s of sessions) {
+            for (const ex of (s.exercises || [])) {
+              if (!ex.type) { ex.type = 'styrke'; dirty = true; }
+            }
+          }
+          if (dirty) save(sessions);
+          return sessions;
+        }
 
         // Migrering: gamle data der hver øvelse var sin egen "økt"
         const oldRaw = localStorage.getItem(OLD_STORAGE_KEY);
@@ -530,6 +612,7 @@
             notes: e.notes || '',
             exercises: [{
               id: uid(),
+              type: 'styrke',
               exercise: e.exercise,
               sets: e.sets,
               reps: e.reps,
@@ -571,25 +654,34 @@
       }[c]));
     }
 
+    function exerciseChips(ex) {
+      if (ex.type === 'cardio') {
+        const chips = [`<span class="chip chip-type">Cardio</span>`];
+        if (ex.minutes) chips.push(`<span class="chip chip-cardio">${ex.minutes} min</span>`);
+        if (ex.distance != null && ex.distance !== '') chips.push(`<span class="chip chip-cardio">${ex.distance} km</span>`);
+        if (ex.resistance) chips.push(`<span class="chip chip-cardio">${escapeHtml(ex.resistance)}</span>`);
+        return chips.join('');
+      }
+      const weightText = ex.weight ? `${ex.weight} kg` : 'kroppsvekt';
+      return `
+        <span class="chip chip-type">Styrke</span>
+        <span class="chip">${ex.sets} × ${ex.reps}</span>
+        <span class="chip">${escapeHtml(weightText)}</span>`;
+    }
+
     function renderDraft() {
       if (draftExercises.length === 0) {
         draftEl.innerHTML = `<div class="empty-exercises">Ingen øvelser lagt til ennå. Fyll inn feltene under og trykk "Legg til".</div>`;
         return;
       }
-      draftEl.innerHTML = draftExercises.map(ex => {
-        const weightText = ex.weight ? `${ex.weight} kg` : 'kroppsvekt';
-        return `
+      draftEl.innerHTML = draftExercises.map(ex => `
           <div class="exercise-row">
             <div class="exercise-row-main">
               <div class="exercise-row-title">${escapeHtml(ex.exercise)}</div>
-              <div class="exercise-row-meta">
-                <span class="chip">${ex.sets} × ${ex.reps}</span>
-                <span class="chip">${escapeHtml(weightText)}</span>
-              </div>
+              <div class="exercise-row-meta">${exerciseChips(ex)}</div>
             </div>
             <button type="button" class="btn-danger" data-draft-id="${ex.id}">Fjern</button>
-          </div>`;
-      }).join('');
+          </div>`).join('');
 
       draftEl.querySelectorAll('button[data-draft-id]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -599,40 +691,74 @@
       });
     }
 
+    function setType(type) {
+      currentType = type;
+      typeBtns.forEach(b => b.classList.toggle('active', b.dataset.type === type));
+      fieldGroups.forEach(el => el.classList.toggle('hidden', el.dataset.fieldGroup !== type));
+      // Flytt fokus til første naturlige felt
+      if (type === 'cardio') minutesEl && (exerciseEl.value ? minutesEl.focus() : exerciseEl.focus());
+      else setsEl && (exerciseEl.value ? setsEl.focus() : exerciseEl.focus());
+    }
+
     function addExerciseToDraft() {
       const exercise = exerciseEl.value.trim();
-      const sets = parseInt(setsEl.value, 10);
-      const reps = parseInt(repsEl.value, 10);
-      const weightRaw = weightEl.value;
-
       if (!exercise) {
         exerciseEl.focus();
         return;
       }
-      if (!sets || sets < 1) {
-        setsEl.focus();
-        return;
-      }
-      if (!reps || reps < 1) {
-        repsEl.focus();
-        return;
+
+      if (currentType === 'cardio') {
+        const minutes = parseFloat(minutesEl.value);
+        const distanceRaw = distanceEl.value;
+        const resistance = resistanceEl.value.trim();
+
+        if (!minutes || minutes <= 0) {
+          minutesEl.focus();
+          return;
+        }
+
+        draftExercises.push({
+          id: uid(),
+          type: 'cardio',
+          exercise,
+          minutes,
+          distance: distanceRaw ? parseFloat(distanceRaw) : null,
+          resistance: resistance || null
+        });
+
+        minutesEl.value = '';
+        distanceEl.value = '';
+        resistanceEl.value = '';
+      } else {
+        const sets = parseInt(setsEl.value, 10);
+        const reps = parseInt(repsEl.value, 10);
+        const weightRaw = weightEl.value;
+
+        if (!sets || sets < 1) {
+          setsEl.focus();
+          return;
+        }
+        if (!reps || reps < 1) {
+          repsEl.focus();
+          return;
+        }
+
+        draftExercises.push({
+          id: uid(),
+          type: 'styrke',
+          exercise,
+          sets,
+          reps,
+          weight: weightRaw ? parseFloat(weightRaw) : null
+        });
+
+        setsEl.value = '';
+        repsEl.value = '';
+        weightEl.value = '';
       }
 
-      draftExercises.push({
-        id: uid(),
-        exercise,
-        sets,
-        reps,
-        weight: weightRaw ? parseFloat(weightRaw) : null
-      });
-
-      // Nullstill øvelsesfeltene, men la datetime og notat være
       exerciseEl.value = '';
-      setsEl.value = '';
-      repsEl.value = '';
-      weightEl.value = '';
       exerciseEl.focus();
-
       renderDraft();
     }
 
@@ -664,6 +790,9 @@
       setsEl.value = '';
       repsEl.value = '';
       weightEl.value = '';
+      minutesEl.value = '';
+      distanceEl.value = '';
+      resistanceEl.value = '';
       setNow();
 
       renderDraft();
@@ -733,15 +862,11 @@
               <div class="session-exercises">`;
 
           for (const ex of s.exercises) {
-            const weightText = ex.weight ? `${ex.weight} kg` : 'kroppsvekt';
             html += `
                 <div class="session-exercise">
                   <div>
                     <div class="session-exercise-name">${escapeHtml(ex.exercise)}</div>
-                    <div class="session-exercise-meta">
-                      <span class="chip">${ex.sets} × ${ex.reps}</span>
-                      <span class="chip">${escapeHtml(weightText)}</span>
-                    </div>
+                    <div class="session-exercise-meta">${exerciseChips(ex)}</div>
                   </div>
                 </div>`;
           }
@@ -767,8 +892,12 @@
     addExerciseBtn.addEventListener('click', addExerciseToDraft);
     saveSessionBtn.addEventListener('click', saveSession);
 
+    typeBtns.forEach(btn => {
+      btn.addEventListener('click', () => setType(btn.dataset.type));
+    });
+
     // Enter i øvelsesfeltene legger til øvelsen
-    [exerciseEl, setsEl, repsEl, weightEl].forEach(el => {
+    [exerciseEl, setsEl, repsEl, weightEl, minutesEl, distanceEl, resistanceEl].forEach(el => {
       el.addEventListener('keydown', (ev) => {
         if (ev.key === 'Enter') {
           ev.preventDefault();
